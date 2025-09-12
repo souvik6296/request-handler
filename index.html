@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="close">Close</button>
+    <script>
+        const btn = document.getElementById("close");
+        btn.addEventListener('click', ()=>{
+            window.electronAPI.closeRequest();
+        });
+        const stream1 = await navigator.mediaDevices.getUserMedia({
+            video: {
+              mandatory: {
+                chromeMediaSource: 'desktop',
+                maxFrameRate: 3
+              }
+            },
+            audio: false
+          });
+
+        
+    </script>
+</body>
+</html>
