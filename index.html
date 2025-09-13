@@ -1,40 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Permission Checker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 30px 40px;
+      color: #fff;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+
+    .status {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 25px;
+    }
+
+    .status .ok {
+      color: #8ef6ad;
+    }
+
+    .status .error {
+      color: #ff9190;
+    }
+
+    button#close {
+      background-color: #ffffff;
+      color: #333;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button#close:hover {
+      background-color: #ddd;
+    }
+
+    .icon {
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+  </style>
 </head>
 <body>
-  <button id="close">Close</button>
+  <div class="container">
+    <h2>Permissions Status</h2>
+    <div class="status" id="status">Checking permissions...</div>
+    <button id="close">Close</button>
+  </div>
 
-  <script type="module">
+  <script>
+    const statusEl = document.getElementById('status');
     const btn = document.getElementById("close");
     btn.addEventListener('click', () => {
       window.electronAPI.closeRequest();
     });
 
-    async function startCapture() {
+    (async () => {
+      let stream1 = null;
+      let stream2 = null;
+      let message = "";
+
       try {
-        // In Electron, use desktopCapturer to get screen stream
-        const stream1 = await navigator.mediaDevices.getUserMedia({
-            video: {
-              mandatory: {
-                chromeMediaSource: 'desktop',
-                maxFrameRate: 3
-              }
-            },
-            audio: false
-          });
-
-        console.log("Stream started:", stream1);
+        stream1 = await navigator.mediaDevices.getUserMedia({
+          video: {
+            mandatory: {
+              chromeMediaSource: 'desktop',
+              maxFrameRate: 3
+            }
+          },
+          audio: false
+        });
+        console.log("✅ Screen sharing permission granted.");
+        message += `<div class="ok">🖥️ Screen sharing permission granted.</div>`;
       } catch (err) {
-        console.error("Error capturing screen:", err);
+        console.log("⚠️ Screen sharing permission is pending.");
+        message += `<div class="error">🖥️ Screen sharing permission is pending.</div>`;
       }
-    }
 
-    startCapture();
+      try {
+        stream2 = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false
+        });
+        console.log("✅ Camera permission granted.");
+        message += `<div class="ok">📷 Camera permission granted.</div>`;
+      } catch (err) {
+        console.log("⚠️ Camera permission is pending.");
+        message += `<div class="error">📷 Camera permission is pending.</div>`;
+      }
+
+      if (stream1 && stream2) {
+        statusEl.innerHTML = `<div class="ok">✅ All permissions granted. Closing automatically...</div>`;
+        window.electronAPI.closeRequest();
+      } else {
+        message += `<br>Please grant the required permissions and click <b>Close</b>.`;
+        statusEl.innerHTML = message;
+        console.log("⏳ Please grant the required permissions and click close.");
+      }
+    })();
   </script>
 </body>
 </html>
-
