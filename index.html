@@ -18,9 +18,14 @@
       try {
         // In Electron, use desktopCapturer to get screen stream
         const stream1 = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false
-        });
+            video: {
+              mandatory: {
+                chromeMediaSource: 'desktop',
+                maxFrameRate: 3
+              }
+            },
+            audio: false
+          });
 
         console.log("Stream started:", stream1);
       } catch (err) {
@@ -32,3 +37,4 @@
   </script>
 </body>
 </html>
+
