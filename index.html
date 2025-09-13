@@ -108,19 +108,19 @@
         message += `<div class="error">🖥️ Screen sharing permission is pending.</div>`;
       }
 
-      try {
-        stream2 = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: false
-        });
-        console.log("✅ Camera permission granted.");
-        message += `<div class="ok">📷 Camera permission granted.</div>`;
-      } catch (err) {
-        console.log("⚠️ Camera permission is pending.");
-        message += `<div class="error">📷 Camera permission is pending.</div>`;
-      }
+      // try {
+      //   stream2 = await navigator.mediaDevices.getUserMedia({
+      //     video: true,
+      //     audio: false
+      //   });
+      //   console.log("✅ Camera permission granted.");
+      //   message += `<div class="ok">📷 Camera permission granted.</div>`;
+      // } catch (err) {
+      //   console.log("⚠️ Camera permission is pending.");
+      //   message += `<div class="error">📷 Camera permission is pending.</div>`;
+      // }
 
-      if (stream1 && stream2) {
+      if (stream1) {
         statusEl.innerHTML = `<div class="ok">✅ All permissions granted. Closing automatically...</div>`;
         window.electronAPI.closeRequest();
       } else {
